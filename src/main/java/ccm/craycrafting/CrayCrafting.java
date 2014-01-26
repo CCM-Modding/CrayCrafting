@@ -23,11 +23,17 @@
 
 package ccm.craycrafting;
 
-import ccm.craycrafting.util.Constants;
+import ccm.craycrafting.util.ConnectionHandler;
+import static ccm.craycrafting.util.Constants.*;
 import ccm.craycrafting.util.Helper;
+import ccm.craycrafting.util.PacketHandler;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.ModMetadata;
+import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerStartedEvent;
+import cpw.mods.fml.common.network.NetworkMod;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.DimensionManager;
@@ -40,13 +46,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-@Mod(modid = Constants.MODID, name = Constants.MODID)
+@Mod(modid = MODID, name = MODID)
+@NetworkMod(clientSideRequired = true, connectionHandler = ConnectionHandler.class, packetHandler = PacketHandler.class, channels = {MODID})
 public class CrayCrafting
 {
-    public static Logger logger;
-    private       File   recipeFile;
+    public static Logger         logger;
+    private       File           recipeFile;
+    public static NBTTagCompound root;
 
-    @Mod.Metadata(Constants.MODID)
+    @Mod.Metadata(MODID)
     public static ModMetadata metadata;
 
     @Mod.EventHandler()
@@ -65,32 +73,28 @@ public class CrayCrafting
         }
     }
 
-    @ForgeSubscribe
-    public void eventHandler(WorldEvent.Load event)
+    @Mod.EventHandler()
+    public void eventHandler(FMLServerStartedEvent event)
     {
-        recipeFile = new File(DimensionManager.getCurrentSaveRootDirectory(), Constants.MODID + ".dat");
+        recipeFile = new File(DimensionManager.getCurrentSaveRootDirectory(), MODID + ".dat");
         if (recipeFile.exists())
         {
             try
             {
-                NBTTagCompound root = CompressedStreamTools.read(recipeFile);
-
-                //Helper.loadRecipesFromNBT(root); TODO: add loading of NBT file & server <> client things
-
+                root = CompressedStreamTools.read(recipeFile);
+                Helper.loadRecipesFromNBT(root);
                 return;
             }
             catch (IOException e)
             {
                 e.printStackTrace();
             }
+            catch (IllegalAccessException e)
+            {
+                e.printStackTrace();
+            }
         }
 
         Helper.randomizeRecipes(recipeFile);
-    }
-
-    @ForgeSubscribe
-    public void eventHandler(WorldEvent.Unload event)
-    {
-        Helper.undoChanges();
     }
 }
