@@ -1,0 +1,16 @@
+[
+{
+  "modid": "CrayCrafting",
+  "name": "CrayCrafting",
+  "description": "Who needs real crafting anyway?!?",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "https://github.com/CCM-Modding/CrayCrafting",
+  "updateUrl": "",
+  "authors": ["Dries007"],
+  "credits": "Claycops madness",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]

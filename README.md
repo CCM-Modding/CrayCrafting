@@ -1,4 +1,4 @@
 CrayCrafting
 ============
 
-Who needs real crafting?!?
+Who needs real crafting anyway?!?
