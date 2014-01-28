@@ -42,8 +42,8 @@ import static ccm.craycrafting.util.Constants.*;
 
 public class Helper
 {
-    private static final ArrayList<IRecipe> ADDED_RECIPES   = new ArrayList<IRecipe>();
-    private static final ArrayList<IRecipe> REMOVED_RECIPES = new ArrayList<IRecipe>();
+    private static final LinkedList<IRecipe> ADDED_RECIPES   = new LinkedList<IRecipe>();
+    private static final LinkedList<IRecipe> REMOVED_RECIPES = new LinkedList<IRecipe>();
 
     public static NBTTagCompound getNBTFromRecipe(ShapedRecipes recipe, ItemStack newOutput) throws IllegalAccessException
     {
@@ -103,7 +103,7 @@ public class Helper
         ItemStack output = ItemStack.loadItemStackFromNBT(newOutput ? nbtRecipe.getCompoundTag(NBT_newOutput) : nbtRecipe.getCompoundTag(NBT_oldOutput));
         NBTTagList list = nbtRecipe.getTagList(NBT_input);
 
-        ArrayList<ItemStack> input = new ArrayList<ItemStack>();
+        LinkedList<ItemStack> input = new LinkedList<ItemStack>();
         for (int i = 0; i < list.tagCount(); i++) input.add(ItemStack.loadItemStackFromNBT((NBTTagCompound) list.tagAt(i)));
 
         return new ShapelessRecipes(output, input);
@@ -189,7 +189,7 @@ public class Helper
 
     public static ShapedOreRecipe getShapedOreRecipeFromNBT(NBTTagCompound nbtRecipe, boolean newOutput)
     {
-        ArrayList<Object> input = new ArrayList<Object>(); // Becomes entire recipe input
+        LinkedList<Object> input = new LinkedList<Object>(); // Becomes entire recipe input
         ItemStack output = ItemStack.loadItemStackFromNBT(newOutput ? nbtRecipe.getCompoundTag(NBT_newOutput) : nbtRecipe.getCompoundTag(NBT_oldOutput));
 
         NBTTagList inputs = nbtRecipe.getTagList(NBT_input);
@@ -244,7 +244,7 @@ public class Helper
 
     public static ShapelessOreRecipe getShapelessOreRecipeFromNBT(NBTTagCompound nbtRecipe, boolean newOutput)
     {
-        ArrayList<Object> input = new ArrayList<Object>();
+        LinkedList<Object> input = new LinkedList<Object>();
         ItemStack output = ItemStack.loadItemStackFromNBT(newOutput ? nbtRecipe.getCompoundTag(NBT_newOutput) : nbtRecipe.getCompoundTag(NBT_oldOutput));
 
         NBTTagList inputs = nbtRecipe.getTagList(NBT_input);
@@ -261,11 +261,11 @@ public class Helper
     public static void randomizeRecipes(File recipeFile)
     {
         NBTTagCompound root = new NBTTagCompound();
-        ArrayList<ItemStack> outputs = new ArrayList<ItemStack>();
-        ArrayList<ShapedRecipes> shapedRecipeses = new ArrayList<ShapedRecipes>();
-        ArrayList<ShapelessRecipes> shapelessRecipeses = new ArrayList<ShapelessRecipes>();
-        ArrayList<ShapedOreRecipe> shapedOreRecipes = new ArrayList<ShapedOreRecipe>();
-        ArrayList<ShapelessOreRecipe> shapelessOreRecipes = new ArrayList<ShapelessOreRecipe>();
+        ArrayList<ItemStack> outputs = new ArrayList<ItemStack>(CraftingManager.getInstance().getRecipeList().size());
+        LinkedList<ShapedRecipes> shapedRecipeses = new LinkedList<ShapedRecipes>();
+        LinkedList<ShapelessRecipes> shapelessRecipeses = new LinkedList<ShapelessRecipes>();
+        LinkedList<ShapedOreRecipe> shapedOreRecipes = new LinkedList<ShapedOreRecipe>();
+        LinkedList<ShapelessOreRecipe> shapelessOreRecipes = new LinkedList<ShapelessOreRecipe>();
 
         /**
          * Loop over all recipes and add the ones we can/will randomise to a list.
@@ -429,6 +429,7 @@ public class Helper
 
     public static void loadRecipesFromNBT(NBTTagCompound root) throws IllegalAccessException
     {
+        if (root.hasKey(NBT_shapedRecipes))
         {
             NBTTagList shapedRecipesesNBTagList = root.getTagList(NBT_shapedRecipes);
             for (int i = 0; i < shapedRecipesesNBTagList.tagCount(); i++)
@@ -453,6 +454,7 @@ public class Helper
             }
         }
 
+        if (root.hasKey(NBT_shapelessRecipes))
         {
             NBTTagList shapelessRecipesesNBTagList = root.getTagList(NBT_shapelessRecipes);
             for (int i = 0; i < shapelessRecipesesNBTagList.tagCount(); i++)
@@ -476,6 +478,8 @@ public class Helper
                 ADDED_RECIPES.add(getShapelessRecipeFromNBT(recipe, true));
             }
         }
+
+        if (root.hasKey(NBT_shapedOreRecipes))
         {
             NBTTagList shapedOreRecipesNBTagList = root.getTagList(NBT_shapedOreRecipes);
             for (int i = 0; i < shapedOreRecipesNBTagList.tagCount(); i++)
@@ -499,6 +503,8 @@ public class Helper
                 ADDED_RECIPES.add(getShapedOreRecipeFromNBT(recipe, true));
             }
         }
+
+        if (root.hasKey(NBT_shapelessOreRecipes))
         {
             NBTTagList shapelessOreRecipesNBTagList = root.getTagList(NBT_shapelessOreRecipes);
             for (int i = 0; i < shapelessOreRecipesNBTagList.tagCount(); i++)
