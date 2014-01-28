@@ -9,7 +9,7 @@
   "updateUrl": "",
   "authors": ["Dries007"],
   "credits": "Claycops madness",
-  "logoFile": "",
+  "logoFile": "/assets/craycrafting/logo.png",
   "screenshots": [],
   "dependencies": []
 }

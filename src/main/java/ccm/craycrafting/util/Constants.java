@@ -23,58 +23,30 @@
 
 package ccm.craycrafting.util;
 
-import ccm.craycrafting.CrayCrafting;
-import net.minecraft.item.crafting.ShapedRecipes;
-import net.minecraftforge.oredict.ShapedOreRecipe;
-
-import java.lang.reflect.Field;
-
+/**
+ * Constants!
+ *
+ * @author Dries007
+ */
 public class Constants
 {
+    private Constants() {}
+
     public static final String MODID = "CrayCrafting";
 
-    public static final String DUMMY_CHARS = "azertyuiopqsdfghjklmwxcvbn"; // Dummy caracters for the map
+    public static final String CHANNEL_STATUS = MODID + "_s";
+    public static final String CHANNEL_DATA   = MODID + "_d";
 
-    public static final String NBT_shapedRecipes       = "shapedRecipes";
-    public static final String NBT_shapelessRecipes    = "shapelessRecipes";
-    public static final String NBT_shapedOreRecipes    = "shapedOreRecipes";
-    public static final String NBT_shapelessOreRecipes = "shapelessOreRecipes";
+    public static final String STATUS_RESET = "reset";
+
+    public static final String DUMMY_CHARS = "azertyuiopqsdfghjklmwxcvbn"; // Dummy caracters for the map in ShapedOreRecipeType
 
     public static final String NBT_recipeWidth   = "recipeWidth";
     public static final String NBT_recipeHeight  = "recipeHeight";
     public static final String NBT_input         = "input";
-    public static final String NBT_oldOutput     = "oldOutput";
-    public static final String NBT_newOutput     = "newOutput";
+    public static final String NBT_output        = "output";
     public static final String NBT_field_92101_f = "field_92101_f";
     public static final String NBT_map           = "map";
     public static final String NBT_mirror        = "mirror";
     public static final String NBT_oredictname   = "oredictname";
-
-    public static final Field ShapedRecipes_field_92101_f;
-    public static final Field ShapedOreRecipe_width;
-    public static final Field ShapedOreRecipe_height;
-    public static final Field ShapedOreRecipe_mirror;
-
-    static
-    {
-        try
-        {
-            ShapedRecipes_field_92101_f = ShapedRecipes.class.getDeclaredFields()[5];
-            ShapedRecipes_field_92101_f.setAccessible(true);
-
-            ShapedOreRecipe_mirror = ShapedOreRecipe.class.getDeclaredField("mirrored");
-            ShapedOreRecipe_mirror.setAccessible(true);
-
-            ShapedOreRecipe_width = ShapedOreRecipe.class.getDeclaredField("width");
-            ShapedOreRecipe_width.setAccessible(true);
-
-            ShapedOreRecipe_height = ShapedOreRecipe.class.getDeclaredField("height");
-            ShapedOreRecipe_height.setAccessible(true);
-        }
-        catch (NoSuchFieldException e)
-        {
-            CrayCrafting.logger.severe("This is going to be a problem later, so I'm stopping it here.");
-            throw new RuntimeException(e);
-        }
-    }
 }

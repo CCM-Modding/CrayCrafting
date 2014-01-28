@@ -23,27 +23,41 @@
 
 package ccm.craycrafting.util;
 
-import ccm.craycrafting.CrayCrafting;
+import ccm.craycrafting.recipes.RecipeRegistry;
 import cpw.mods.fml.common.network.IPacketHandler;
 import cpw.mods.fml.common.network.Player;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet250CustomPayload;
 
+import static ccm.craycrafting.util.Constants.*;
+
+/**
+ * Does package receiving only.
+ *
+ * @author Dries007
+ */
 public class PacketHandler implements IPacketHandler
 {
     @Override
     public void onPacketData(INetworkManager manager, Packet250CustomPayload packet, Player player)
     {
-        NBTTagCompound root = Helper.byteArrayToNBT(packet.data);
-        try
+        if (packet.channel.equals(CHANNEL_STATUS))
         {
-            Helper.loadRecipesFromNBT(root);
+            String msg = new String(packet.data);
+            if (msg.equals(STATUS_RESET)) RecipeRegistry.undo();
         }
-        catch (IllegalAccessException e)
+        else if (packet.channel.equals(CHANNEL_DATA))
         {
-            CrayCrafting.logger.severe("IllegalAccessException");
-            e.printStackTrace();
+            NBTTagCompound root = Helper.byteArrayToNBT(packet.data);
+            try
+            {
+                RecipeRegistry.loadRecipesFromNBT(root);
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
         }
     }
 }

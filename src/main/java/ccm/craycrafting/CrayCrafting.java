@@ -23,36 +23,37 @@
 
 package ccm.craycrafting;
 
+import ccm.craycrafting.recipes.*;
 import ccm.craycrafting.util.ConnectionHandler;
-import static ccm.craycrafting.util.Constants.*;
-import ccm.craycrafting.util.Helper;
 import ccm.craycrafting.util.PacketHandler;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.ModMetadata;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.event.FMLServerStartedEvent;
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.network.NetworkMod;
 import net.minecraft.nbt.CompressedStreamTools;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.ForgeSubscribe;
-import net.minecraftforge.event.world.WorldEvent;
 import org.mcstats.Metrics;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
 
+import static ccm.craycrafting.util.Constants.*;
+
+/**
+ * Crazy crating recipe shuffler, inspired by ClayCorp.
+ * <p/>
+ * Look at recipes package for an API like structure.
+ *
+ * @author Dries007
+ */
 @Mod(modid = MODID, name = MODID)
-@NetworkMod(clientSideRequired = true, connectionHandler = ConnectionHandler.class, packetHandler = PacketHandler.class, channels = {MODID})
+@NetworkMod(clientSideRequired = true, connectionHandler = ConnectionHandler.class, packetHandler = PacketHandler.class, channels = {CHANNEL_DATA, CHANNEL_STATUS})
 public class CrayCrafting
 {
-    public static Logger         logger;
-    private       File           recipeFile;
-    public static NBTTagCompound root;
+    public static Logger logger;
 
     @Mod.Metadata(MODID)
     public static ModMetadata metadata;
@@ -71,30 +72,31 @@ public class CrayCrafting
             logger.warning("Something went wrong, no metrics.");
             e.printStackTrace();
         }
+
+        new ShapedRecipesType();
+        new ShapelessRecipesType();
+        new ShapedOreRecipeType();
+        new ShapelessOreRecipeType();
     }
 
     @Mod.EventHandler()
-    public void eventHandler(FMLServerStartedEvent event)
+    public void eventHandler(FMLServerStartingEvent event)
     {
-        recipeFile = new File(DimensionManager.getCurrentSaveRootDirectory(), MODID + ".dat");
+        File recipeFile = new File(DimensionManager.getCurrentSaveRootDirectory(), MODID + ".dat");
         if (recipeFile.exists())
         {
             try
             {
-                root = CompressedStreamTools.read(recipeFile);
-                Helper.loadRecipesFromNBT(root);
-                return;
+                RecipeRegistry.loadRecipesFromNBT(CompressedStreamTools.read(recipeFile));
             }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
-            catch (IllegalAccessException e)
+            catch (Exception e)
             {
                 e.printStackTrace();
             }
         }
-
-        Helper.randomizeRecipes(recipeFile);
+        else
+        {
+            RecipeRegistry.randomizeRecipes(recipeFile);
+        }
     }
 }

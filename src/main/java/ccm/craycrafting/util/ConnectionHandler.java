@@ -23,10 +23,8 @@
 
 package ccm.craycrafting.util;
 
-import ccm.craycrafting.CrayCrafting;
-import cpw.mods.fml.common.FMLCommonHandler;
+import ccm.craycrafting.recipes.RecipeRegistry;
 import cpw.mods.fml.common.network.IConnectionHandler;
-import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.network.Player;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.NetLoginHandler;
@@ -34,12 +32,17 @@ import net.minecraft.network.packet.NetHandler;
 import net.minecraft.network.packet.Packet1Login;
 import net.minecraft.server.MinecraftServer;
 
+/**
+ * Used to send packet only. Could also use an IPlayerTracker but mhe.
+ *
+ * @author Dries007
+ */
 public class ConnectionHandler implements IConnectionHandler
 {
     @Override
     public void playerLoggedIn(Player player, NetHandler netHandler, INetworkManager manager)
     {
-        PacketDispatcher.sendPacketToPlayer(PacketDispatcher.getPacket(Constants.MODID, Helper.nbtToByteArray(CrayCrafting.root)), player);
+        if (MinecraftServer.getServer().isDedicatedServer()) RecipeRegistry.sendPacketTo(player);
     }
 
     @Override
@@ -63,7 +66,7 @@ public class ConnectionHandler implements IConnectionHandler
     @Override
     public void connectionClosed(INetworkManager manager)
     {
-        if (FMLCommonHandler.instance().getEffectiveSide().isClient()) Helper.undoChanges();
+
     }
 
     @Override
